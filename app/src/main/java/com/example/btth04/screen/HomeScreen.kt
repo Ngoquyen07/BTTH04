@@ -29,21 +29,24 @@ import com.example.btth04.model.Account
 
 @Composable
 fun HomeScreen(){
-    val preferenceHelper : PreferenceHelper = PreferenceHelper(LocalContext.current)
-
+    val preferenceHelper = PreferenceHelper(LocalContext.current)
     val context = LocalContext.current
+    // Biến lưu trữ thông tin tài khoản hiện tại trong SharedPreferences
     val account = preferenceHelper.GetAccount()
     var PuserName by remember { mutableStateOf(account.username) }
     var PpassWord by remember { mutableStateOf(account.password) }
 
+    // Biến lưu trữ thông tin tài khoản được nhập vào ( 2 trường nhập EditText)
     var userName by remember { mutableStateOf("") }
     var passWord by remember { mutableStateOf("") }
-
+    // thiết kế giao diện
+    // Layout chính dạng cột
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        // EditText tương ứng với userName
         OutlinedTextField(
             value = userName,
             onValueChange = {userName = it},
@@ -54,6 +57,7 @@ fun HomeScreen(){
             modifier = Modifier
                 .padding(top =  30.dp)
         )
+        // EditText tương ứng với passWord
         OutlinedTextField(
             value = passWord,
             onValueChange = {passWord = it},
@@ -64,7 +68,7 @@ fun HomeScreen(){
             modifier = Modifier
                 .padding(top =  30.dp)
         )
-
+        // 1 Row để chứa 3 button SAVE, LOAD, CLEAR
         Row(
             modifier = Modifier
                 .padding(top = 30.dp),
@@ -73,6 +77,7 @@ fun HomeScreen(){
         ) {
             Button(
                 onClick = {
+                    // sự kiện click để lưu tài khoản vào SharedPreferences
                     onSaveClick(preferenceHelper, userName, passWord, context)
                     userName = ""
                     passWord = ""
@@ -82,6 +87,7 @@ fun HomeScreen(){
             }
             Button(
                 onClick = {
+                    // Load lại tài khoản từ SharedPreferences và cập nhật vào biến
                     PuserName = account.username
                     PpassWord = account.password
                 }
@@ -90,6 +96,7 @@ fun HomeScreen(){
             }
             Button(
                 onClick = {
+                    // sự kiện click để xóa tài khoản trong SharedPreferences
                     onClearClick(preferenceHelper)
                     PuserName = ""
                     PpassWord = ""
@@ -98,16 +105,17 @@ fun HomeScreen(){
                 Text(text = "CLEAR")
             }
         }
-
+        // TextView hiển th thông tin tài khoản khi thực hiện LOAD
         Text(
-            text = "User Name: $PuserName",
+            text = "User Name: $PuserName", // Hiển thị thông tin tài khoản ,
+            // mọi thay đổi của PuserName đều sẽ làm thay đổi TextView này
             fontSize = 18.sp, // Tăng kích thước chữ
             fontWeight = FontWeight.Bold, // Làm đậm
             modifier = Modifier
                 .padding(bottom = 8.dp), // Tạo khoảng cách dưới
         )
         Text(
-            text = "Password: $PpassWord",
+            text = "Password: $PpassWord", // tương tự trên
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
         )
@@ -116,10 +124,10 @@ fun HomeScreen(){
 }
 
 fun onSaveClick(preferenceHelper: PreferenceHelper , userName: String, passWord: String , context: Context){
-
+    // kiểm tra nếu 2 trường có thông tin hay ko
     if(!userName.isEmpty() && !passWord.isEmpty()) {
         val account = Account(userName, passWord)
-        preferenceHelper.SaveAccount(account)
+        preferenceHelper.SaveAccount(account) // Ghi thông tin tài khoản vào SharedPreferences ( ghi đè nếu đã có)
         Toast.makeText(context, "Save successfully", Toast.LENGTH_SHORT).show()
     }
     else{
@@ -128,6 +136,7 @@ fun onSaveClick(preferenceHelper: PreferenceHelper , userName: String, passWord:
 }
 
 fun onClearClick(preferenceHelper: PreferenceHelper){
+    // Xóa tài khoản trong SharedPreferences
     preferenceHelper.ClearAccount()
 }
 
